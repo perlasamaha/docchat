@@ -3,11 +3,16 @@ import express from 'express';
 import session from 'express-session';
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
+import { PrismaNeonHTTP } from '@prisma/adapter-neon';
 
 
 // ===== 2. APP SETUP (just below the imports) =====
 const app = express();
-const prisma = new PrismaClient();
+
+// Connect Prisma to Neon over HTTPS (port 443) so it works on networks that block 5432.
+if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL not loaded — start with: node --watch --env-file=.env index.js');
+const adapter = new PrismaNeonHTTP(process.env.DATABASE_URL, {});
+const prisma = new PrismaClient({ adapter });
 app.use(express.json());
 
 // sessions: remembers who is logged in, via a signed cookie
