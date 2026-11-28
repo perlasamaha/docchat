@@ -172,7 +172,8 @@ app.post("/api/chat", requireLogin, async (req, res) => {
       { role: "user", parts: [{ text: message }] }, // the new question goes last
     ];
     const response = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL, // model name from .env, so it's easy to swap contents,
+      model: process.env.GEMINI_MODEL, // model name from .env, so it's easy to swap 
+      contents,
       config: { systemInstruction: system },
     });
     const reply = response.text; // <-- Gemini puts the answer HERE
@@ -244,8 +245,7 @@ app.get("/api/history", requireLogin, async (req, res) => {
     where: { userId: req.session.userId, documentId }, // only THIS user's turns on THIS document
     orderBy: { createdAt: "asc" }, // oldest first, so the chat renders in reading order
   });
-  res.json({ history }); // array of { role, text, ... }
-  rows;
+  res.json({ history }); // array of { role, text, ... } rows;
 });
 
 // DOCUMENTS: list this user's uploaded documents, newest first (used to restore the active one on reload)
@@ -260,8 +260,7 @@ app.get("/api/documents", requireLogin, async (req, res) => {
 
 // serve the built React site — hand out the files in client/dist (index.html, JS, CSS) as-is
 app.use(express.static(path.join(process.cwd(), "../client/dist"))); // process.cwd() is server/, so ../client/dist
-// catch-all: any request that didn't match an /api route above gets the React app's
-index.html;
+// catch-all: any request that didn't match an /api route above gets the React app's index.html;
 app.use(
   (
     req,
